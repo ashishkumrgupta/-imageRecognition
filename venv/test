@@ -1,0 +1,103 @@
+from numpy import *
+import cv2
+from matplotlib import pyplot as plt
+
+def fndColorSpaces():
+    flags = [i for i in dir(cv2) if i.startswith('COLOR_')]
+    print(flags)
+
+
+#Possible Options
+#cv2.THRESH_BINARY
+#cv2.THRESH_BINARY_INV
+#cv2.THRESH_TRUNC
+#cv2.THRESH_TOZERO
+#cv2.THRESH_TOZERO_INV
+def convertColorImageToBWWithSimpleThreshold():
+    print("reading image")
+    originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_back.PNG')
+    #originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_Front.PNG')
+
+
+    grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+
+
+
+    (thresh, blackAndWhiteImage) = cv2.threshold(grayImage, 135, 255, cv2.THRESH_TOZERO)
+
+
+    cv2.imshow('Original image', originalImage)
+    cv2.imshow('Gray image', grayImage)
+    cv2.imshow('BW image',blackAndWhiteImage)
+    cv2.imwrite('C:\\Users\\ashis\\Pictures\\Camera Roll\\Output\\RP_Back_grey.jpg',blackAndWhiteImage)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+#Possible Options
+#cv2.ADAPTIVE_THRESH_MEAN_C
+#cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+def convertColorImageToBWWithAdaptiveThreshold():
+    print("reading image")
+    originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_back.PNG')
+    #originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_Front.PNG')
+
+    grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+    blackAndWhiteImage = cv2.adaptiveThreshold(grayImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+    (thresh, blackAndWhiteImage1) = cv2.threshold(grayImage, 135, 255, cv2.THRESH_TOZERO)
+
+    cv2.imshow('Simple',blackAndWhiteImage1)
+    cv2.imshow('Adaptive',blackAndWhiteImage)
+
+#    cv2.imwrite('C:\\Users\\ashis\\Pictures\\Camera Roll\\Output\\RP_Back_grey.jpg',blackAndWhiteImage)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+#Possible Options
+#cv2.ADAPTIVE_THRESH_MEAN_C
+#cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+def convertColorImageToBWWithOtsuThreshold():
+    print("reading image")
+    originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_back.PNG')
+    #originalImage = cv2.imread('C:\\Users\\ashis\\Pictures\\Camera Roll\\RP_Front.PNG')
+
+    img = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+
+    # global thresholding
+    ret1, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+
+    # Otsu's thresholding
+    ret2, th2 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Otsu's thresholding after Gaussian filtering
+    blur = cv2.GaussianBlur(img, (5, 5), 0)
+    ret3, th3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # plot all the images and their histograms
+    images = [img, 0, th1,
+              img, 0, th2,
+              blur, 0, th3]
+    titles = ['Original Noisy Image', 'Histogram', 'Global Thresholding (v=127)',
+              'Original Noisy Image', 'Histogram', "Otsu's Thresholding",
+              'Gaussian filtered Image', 'Histogram', "Otsu's Thresholding"]
+
+    for i in range(3):
+        plt.subplot(3, 3, i * 3 + 1), plt.imshow(images[i * 3], 'gray')
+        plt.title(titles[i * 3]), plt.xticks([]), plt.yticks([])
+        plt.subplot(3, 3, i * 3 + 2), plt.hist(images[i * 3].ravel(), 256)
+        plt.title(titles[i * 3 + 1]), plt.xticks([]), plt.yticks([])
+        plt.subplot(3, 3, i * 3 + 3), plt.imshow(images[i * 3 + 2], 'gray')
+        plt.title(titles[i * 3 + 2]), plt.xticks([]), plt.yticks([])
+    plt.show()
+
+#fndColorSpaces()
+
+#1) To convert imgaes to bw with simple threshold
+#convertColorImageToBWWithSimpleThreshold();
+
+#2) To convert imgaes to bw with adaptive threshold
+#convertColorImageToBWWithAdaptiveThreshold();
+
+#3) To convert imgaes to bw with Otsu's threshold
+convertColorImageToBWWithOtsuThreshold()
